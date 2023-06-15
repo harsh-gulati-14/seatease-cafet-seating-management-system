@@ -24,7 +24,6 @@ const HomePage = (props) => {
           <div className="card-deck">
             {tables.map(table => (
               <DinnerTable table={table}/>
-              // <PersonaCard person={persona} key={persona.id} handleUserSelect={props.handleUserSelect} />
             ))}
           </div>
         </div>
