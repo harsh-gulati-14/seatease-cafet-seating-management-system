@@ -1,0 +1,34 @@
+$fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
+$moneta-font-path: '~@moneta/moneta-bootstrap/fonts';
+
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+
+@import '~@moneta/moneta-bootstrap/scss/globals/globals';
+
+@import '~@ag-grid-community/all-modules/dist/styles/ag-grid.css';
+@import '~@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css';
+@import '~@ag-grid-community/all-modules/dist/styles/ag-theme-balham-dark.css';
+
+html.dark {
+  $moneta-bootstrap-primary: $lightblue-500;
+
+  @import '~@moneta/moneta-bootstrap/scss/variables-light';
+  @import '~@moneta/moneta-bootstrap/scss/variable-overrides/variable-overrides';
+  @import '~bootstrap/scss/bootstrap';
+  @import '~@moneta/moneta-bootstrap/scss/class-overrides/class-overrides';
+  @import 'app-styles';
+}
+
+
+html.light {
+  $moneta-bootstrap-primary: $lightblue-500;
+
+  @import '~@moneta/moneta-bootstrap/scss/variables-light';
+  @import '~@moneta/moneta-bootstrap/scss/variable-overrides/variable-overrides';
+  @import '~bootstrap/scss/bootstrap';
+  @import '~@moneta/moneta-bootstrap/scss/class-overrides/class-overrides';
+  @import 'app-styles';
+}

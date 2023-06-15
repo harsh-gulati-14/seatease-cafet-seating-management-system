@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>sep-web</artifactId>
+  <packaging>jar</packaging>
+  <name>sep-web</name>
+
+  <parent>
+    <groupId>com.jpmorgan.sep</groupId>
+    <artifactId>sep-parent</artifactId>
+    <version>${revision}</version>
+    <relativePath>../sep-parent/pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <sonar.javascript.file.suffixes>.js,.jsx,.ts,.tsx</sonar.javascript.file.suffixes>
+    <sonar.sources>${project.basedir}/src</sonar.sources>
+    <sonar.tests>${project.basedir}/src</sonar.tests>
+    <sonar.test.inclusions>
+      **/*.test.js,
+      **/*.test.jsx,
+      **/*.test.ts,
+      **/*.test.tsx,
+      **/*.spec.js,
+      **/*.spec.jsx,
+      **/*.spec.ts,
+      **/*.spec.tsx,
+      **/__tests__/**,
+      **/__mocks__/**,
+      src/setupProxy.js,
+      src/setupProxy.ts,
+      src/setupTests.js,
+      src/setupTests.ts,
+      src/test.js,
+      src/test.ts
+    </sonar.test.inclusions>
+    <sonar.testExecutionReportPaths>test-report.xml</sonar.testExecutionReportPaths>
+    <sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>build</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <!--
+              Conditionally sets the npm-install-arg property to either version or install based on if the
+              package.json changed between the initial and current build. If a change was detected 'npm install'
+              will be executed otherwise 'npm version'.
+            -->
+            <id>web-install-uptodate</id>
+            <goals>
+              <goal>uptodate-property</goal>
+            </goals>
+            <configuration>
+              <name>web-install-arg</name>
+              <value>-v</value>
+              <else>install</else>
+              <fileSet>
+                <directory>${project.basedir}</directory>
+                <outputDirectory>${project.basedir}/target/classes/static</outputDirectory>
+                <includes>
+                  <include>package.json</include>
+                </includes>
+                <mapper>
+                  <type>merge</type>
+                  <from>*.*</from>
+                  <to>index.html</to>
+                </mapper>
+              </fileSet>
+            </configuration>
+          </execution>
+          <execution>
+            <!--
+              Conditionally sets the build.script property to either skip or prod based on if any files under src
+              changed between the initial and current build. If a change was detected 'npm run build:prod'
+              will be executed otherwise 'npm run build:skip'.
+            -->
+            <id>web-build-uptodate</id>
+            <goals>
+              <goal>uptodate-property</goal>
+            </goals>
+            <configuration>
+              <name>build.script</name>
+              <value>skip</value>
+              <else>prod</else>
+              <fileSet>
+                <directory>${project.basedir}/src</directory>
+                <outputDirectory>${project.basedir}/target/classes/static</outputDirectory>
+                <includes>
+                  <include>*/**</include>
+                </includes>
+                <mapper>
+                  <type>merge</type>
+                  <from>*.*</from>
+                  <to>index.html</to>
+                </mapper>
+              </fileSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>exec-web-install</id>
+            <phase>initialize</phase>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>${web-install-arg}</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>exec-npm-build</id>
+            <phase>compile</phase>
+            <configuration>
+              <executable>npm</executable>
+              <arguments>
+                <argument>run</argument>
+                <argument>build:${build.script}</argument>
+              </arguments>
+            </configuration>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/static</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>build</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
